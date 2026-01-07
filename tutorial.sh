@@ -35,7 +35,7 @@ getID(){
 
 addTask(){	
 	if [[ "$1" = 'add' && $# -eq 2 ]]; then
-		echo "$2 will be added to your todo list"
+		echo "Task added sucessfully (ID: $(getID))"
 		addToJSON $2
 	fi
 }
