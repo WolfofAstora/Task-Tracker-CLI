@@ -7,29 +7,36 @@ checkCreateJSON() {
 	fi
 }
 
-getJSONContent(){
-	local data=(cat todos.json)
-	echo $data
+addToJSON(){
+	tmp=todos.tmp
+	id=$(getID)
+	local structure="	{
+			\"id\" : $id,
+			\"description\" : $1,
+			\"status\" : \"todo\",
+			\"createdAt\" : \"date\",
+			\"updatedAt\" : \"date\"
+	},"
+	awk -v txt="$structure" '
+	$0 == "[" {
+		print
+		print txt
+		next
+	}
+	{
+	print
+	}' todos.json > "$tmp" && mv "$tmp" todos.json
 }
 
-addToJSON(){	
-
-	structure="{
-			\"id\" : 1,\n
-			\"description\" : $2,\n
-			\"status\" : \"todo\",\n
-			\"createdAt\" : \"date\",\n
-			\"updatedAt\" : \"date\"\n
-		   }"
-	echo $structure >> todos.json
-
+getID(){
+	oldID=$(grep -o -m 1 '[0-9]\+' todos.json)
+	echo $((oldID + 1))
 }
 
 addTask(){	
 	if [[ "$1" = 'add' && $# -eq 2 ]]; then
 		echo "$2 will be added to your todo list"
-		getJSONContent #debug
-		# addToJSON $2
+		addToJSON $2
 	fi
 }
 
@@ -40,10 +47,11 @@ noParameter(){
 		exit 
 	fi
 }
-main(){	
+main(){
 	noParameter $#
 	checkCreateJSON
 	addTask $1 $2
+	getID
 }
 
 main "$@"
