@@ -9,13 +9,14 @@ checkCreateJSON() {
 
 addToJSON(){
 	tmp=todos.tmp
+	now=`date`
 	id=$(getID)
 	local structure="	{
 			\"id\" : $id,
-			\"description\" : $1,
+			\"description\" : \"$1\",
 			\"status\" : \"todo\",
-			\"createdAt\" : \"date\",
-			\"updatedAt\" : \"date\"
+			\"createdAt\" : \"$now\",
+			\"updatedAt\" : \"$now\"
 	},"
 	awk -v txt="$structure" '
 	$0 == "[" {
@@ -36,7 +37,7 @@ getID(){
 addTask(){	
 	if [[ "$1" = 'add' && $# -eq 2 ]]; then
 		echo "Task added sucessfully (ID: $(getID))"
-		addToJSON $2
+		addToJSON "$2"
 	fi
 }
 
@@ -48,10 +49,9 @@ noParameter(){
 	fi
 }
 main(){
-	noParameter $#
+	noParameter $@
 	checkCreateJSON
-	addTask $1 $2
-	getID
+	addTask "$@"
 }
 
 main "$@"
