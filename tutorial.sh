@@ -54,7 +54,7 @@ addTask(){
 }
 
 noParameter(){
-	echo Wrong parameter given
+	echo -e "Wrong parameter given\n"
 	echo use add \"description\" to create new tasks
 	echo use update '<TASK_ID>' to update existing tasks
 }
