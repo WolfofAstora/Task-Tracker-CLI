@@ -8,9 +8,9 @@ checkCreateJSON() {
 }
 
 addToJSON(){
-	tmp=todos.tmp
-	now=`date`
-	id=$(getID)
+	local tmp=todos.tmp
+	local now=`date`
+	local id=$(getID)
 	local structure="	{
 			\"id\" : $id,
 			\"description\" : \"$1\",
@@ -30,10 +30,13 @@ addToJSON(){
 }
 updateJSON(){
 	gatheredID=$(checkID "$@")
-	if [[ $gatheredID = "$2" ]]; then
-		echo $gatheredID
+	if [[ $gatheredID = "$2" && "$#" -eq 3 ]]; then
+		updateBlock $gatheredID description "$3"
+		updateBlock $gatheredID updatedAt "`date`"
+
 	else 
 		echo This ID: "$2" was not found in 'todos.json'
+		echo Or no description was given
 		exit 1
 	fi
 }
@@ -46,6 +49,13 @@ checkID(){
 getID(){
 	oldID=$(grep -o -m 1 '[0-9]\+' todos.json)
 	echo $((oldID + 1))
+}
+updateBlock(){
+	local ID=$1
+	local keyWord=$2
+	local value=$3
+
+	sed -z -E -i 's/("id".*'"$ID"',[^}]*"'"$keyWord"'"\s*:\s*")[^"]*"/\1'"$value"'"/' todos.json
 }
 
 addTask(){	
