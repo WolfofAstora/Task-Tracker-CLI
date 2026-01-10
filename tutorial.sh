@@ -29,7 +29,7 @@ addToJSON(){
 	}' todos.json > "$tmp" && mv "$tmp" todos.json
 }
 updateJSON(){
-	gatheredID=$(checkID "$@")
+	local gatheredID=$(checkID "$@")
 	if [[ $gatheredID = "$2" && "$#" -eq 3 ]]; then
 		updateBlock $gatheredID description "$3"
 		updateBlock $gatheredID updatedAt "`date`"
@@ -37,6 +37,18 @@ updateJSON(){
 	else 
 		echo This ID: "$2" was not found in 'todos.json'
 		echo Or no description was given
+		exit 1
+	fi
+}
+
+deleteBlock(){
+	local gatheredID=$(checkID "$@")
+	if [[ $gatheredID = "$2" ]]; then
+		local block=$(grep --before-context=1 --after-context=5 '"id" : '"$gatheredID"'' todos.json)
+	#	sed "\|$block|d" todos.json
+		echo $block
+	else 
+		echo This ID: "$2" was not found in 'todos.json'
 		exit 1
 	fi
 }
@@ -77,6 +89,9 @@ main(){
 			;;
 		update)
 			updateJSON "$@"
+			;;
+		delete)
+			deleteBlock "$@"
 			;;
 		*)
 			noParameter
