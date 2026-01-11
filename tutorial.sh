@@ -44,9 +44,34 @@ updateJSON(){
 deleteBlock(){
 	local gatheredID=$(checkID "$@")
 	if [[ $gatheredID = "$2" ]]; then
-		local block=$(grep --before-context=1 --after-context=5 '"id" : '"$gatheredID"'' todos.json)
-	#	sed "\|$block|d" todos.json
-		echo $block
+		awk -v id="$gatheredID" '
+            /^[[:space:]]*\{/ {
+                inside_object = 1
+                keep_object   = 1
+                buffer        = $0 ORS
+                next
+            }
+            inside_object {
+                buffer = buffer $0 ORS
+                
+                if ($0 ~ "\"id\"[[:space:]]*:[[:space:]]*" id) {
+                    keep_object = 0
+                }
+
+                if ($0 ~ /^[[:space:]]*\}[[:space:]]*,?/) {
+                    inside_object = 0
+                    if (keep_object) {
+                        printf "%s", buffer
+                    }
+                    buffer = ""
+                    next
+                }
+                next
+            }
+            { print }
+        ' todos.json > tmp.json && mv tmp.json todos.json
+
+
 	else 
 		echo This ID: "$2" was not found in 'todos.json'
 		exit 1
