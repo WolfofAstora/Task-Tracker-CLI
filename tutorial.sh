@@ -29,7 +29,7 @@ addToJSON(){
 	}' todos.json > "$tmp" && mv "$tmp" todos.json
 }
 updateJSON(){
-	gatheredID=$(checkID "$@")
+	local gatheredID=$(checkID "$@")
 	if [[ $gatheredID = "$2" && "$#" -eq 3 ]]; then
 		updateBlock $gatheredID description "$3"
 		updateBlock $gatheredID updatedAt "`date`"
@@ -41,8 +41,46 @@ updateJSON(){
 	fi
 }
 
+deleteBlock(){
+	local gatheredID=$(checkID "$@")
+	if [[ $gatheredID = "$2" ]]; then
+		awk -v id="$gatheredID" '
+            /^[[:space:]]*\{/ {
+                inside_object = 1
+                keep_object   = 1
+                buffer        = $0 ORS
+                next
+            }
+            inside_object {
+                buffer = buffer $0 ORS
+                
+                if ($0 ~ "\"id\"[[:space:]]*:[[:space:]]*" id) {
+                    keep_object = 0
+                }
+
+                if ($0 ~ /^[[:space:]]*\}[[:space:]]*,?/) {
+                    inside_object = 0
+                    if (keep_object) {
+                        printf "%s", buffer
+                    }
+                    buffer = ""
+                    next
+                }
+                next
+            }
+            { print }
+        ' todos.json > tmp.json && mv tmp.json todos.json
+
+
+	else 
+		echo This ID: "$2" was not found in 'todos.json'
+		exit 1
+	fi
+}
+
 checkID(){
-	id=$(grep -o -m 1 "${2}\+" todos.json)
+	echo $2
+	id=$(grep -o -m 1 '("id".*('"$2"'))' todos.json)
 	echo $id
 }
 
@@ -77,6 +115,9 @@ main(){
 			;;
 		update)
 			updateJSON "$@"
+			;;
+		delete)
+			deleteBlock "$@"
 			;;
 		*)
 			noParameter
