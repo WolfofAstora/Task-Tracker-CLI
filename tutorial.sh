@@ -99,6 +99,32 @@ markDone(){
 	fi
 }
 
+listTasks(){
+	if [ -f ./todos.json ]; then
+			if [[ "$#" -eq 1 ]]; then
+				grep -A 4 "id" todos.json
+				exit 1
+			fi
+		case $2 in
+			done)
+				grep -B 2 -A 2 "done" todos.json
+				;;
+			todo)
+				grep -B 2 -A 2 "todo" todos.json
+				;;
+			in-progress)
+				grep -B 2 -A 2 "in-progress" todos.json
+				;;
+			*)
+				echo "$2" is not a valid status parameter
+				;;
+		esac
+	else
+		echo No todos found
+		exit 1
+	fi
+}
+
 checkID(){
 	echo $2
 	id=$(grep -o -m 1 '("id".*('"$2"'))' todos.json)
@@ -145,6 +171,9 @@ main(){
 			;;
 		mark-done)
 			markDone "$@"
+			;;
+		list)
+			listTasks "$@"
 			;;
 		*)
 			noParameter
