@@ -2,7 +2,7 @@
 
 A lightweight Command Line Interface (CLI) application to track and manage your tasks efficiently. This project was build to practice file system operations, JSON data handling and command line argument parsing using bash.
 
-The idea of this project is by roadmap.sh/projects/task-tracker. 
+The idea of this project is by https://roadmap.sh/projects/task-tracker 
 Requirements were
 * Add, Update and Delete Tasks
 * Mark a task as in progress or done
