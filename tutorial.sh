@@ -78,6 +78,27 @@ deleteBlock(){
 	fi
 }
 
+markInProgress(){
+	local gatheredID=$(checkID "$@")
+	if [[ $gatheredID = "$2" ]]; then
+		updateBlock $gatheredID "status" "in-progress"
+		updateBlock $gatheredID "updatedAt" "`date`"
+	else
+		echo This ID: "$2" was not found in 'todos.json'
+		exit 1
+	fi
+}
+
+markDone(){
+	local gatheredID=$(checkID "$@")
+	if [[ $gatheredID = "$2" ]]; then
+		updateBlock $gatheredID "status" "done"
+		updateBlock $gatheredID "updatedAt" "`date`"
+	else
+		echo This ID: "$2" was not found in 'todos.json'
+	fi
+}
+
 checkID(){
 	echo $2
 	id=$(grep -o -m 1 '("id".*('"$2"'))' todos.json)
@@ -118,6 +139,12 @@ main(){
 			;;
 		delete)
 			deleteBlock "$@"
+			;;
+		mark-in-progress)
+			markInProgress "$@"
+			;;
+		mark-done)
+			markDone "$@"
 			;;
 		*)
 			noParameter
