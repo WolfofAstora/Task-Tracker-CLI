@@ -54,7 +54,8 @@ deleteBlock(){
 }
 
 checkID(){
-	id=$(grep -o -m 1 "${2}\+" todos.json)
+	echo $2
+	id=$(grep -o -m 1 '("id".*('"$2"'))' todos.json)
 	echo $id
 }
 
