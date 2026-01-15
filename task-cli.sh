@@ -99,6 +99,15 @@ markDone(){
 	fi
 }
 
+update_status() {
+    local id="$1"
+    local new_status="$2"
+
+    save_update "$id" "status" "$new_status"
+    
+    echo "Task $id marked as $new_status."
+
+}
 listTasks(){
 	if [ -f ./todos.json ]; then
 			if [[ "$#" -eq 1 ]]; then
@@ -166,12 +175,13 @@ main(){
 		delete)
 			deleteBlock "$@"
 			;;
-		mark-in-progress)
-			markInProgress "$@"
-			;;
-		mark-done)
-			markDone "$@"
-			;;
+		mark-in-progress)	
+            [[ -z "$2" ]] && error_exit "ID missing."
+            update_status "$2" "in-progress"
+            ;;
+        mark-done)
+            [[ -z "$2" ]] && error_exit "ID missing."
+            update_status "$2" "done"
 		list)
 			listTasks "$@"
 			;;
