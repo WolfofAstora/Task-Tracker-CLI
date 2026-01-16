@@ -79,27 +79,6 @@ deleteBlock(){
 	fi
 }
 
-markInProgress(){
-	local gatheredID=$(checkID "$@")
-	if [[ $gatheredID = "$2" ]]; then
-		updateBlock $gatheredID "status" "in-progress"
-		updateBlock $gatheredID "updatedAt" "`date`"
-	else
-		echo This ID: "$2" was not found in 'todos.json'
-		exit 1
-	fi
-}
-
-markDone(){
-	local gatheredID=$(checkID "$@")
-	if [[ $gatheredID = "$2" ]]; then
-		updateBlock $gatheredID "status" "done"
-		updateBlock $gatheredID "updatedAt" "`date`"
-	else
-		echo This ID: "$2" was not found in 'todos.json'
-	fi
-}
-
 update_status() {
     local id="$1"
     local new_status="$2"
