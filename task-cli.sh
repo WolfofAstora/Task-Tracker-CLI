@@ -103,7 +103,7 @@ update_status() {
     local id="$1"
     local new_status="$2"
 
-    save_update "$id" "status" "$new_status"
+    updateBlock "$id" "status" "$new_status"
     
     echo "Task $id marked as $new_status."
 
@@ -148,8 +148,10 @@ updateBlock(){
 	local ID=$1
 	local keyWord=$2
 	local value=$3
+	local now=`date`
 
 	sed -z -E -i 's/("id".*'"$ID"',[^}]*"'"$keyWord"'"\s*:\s*")[^"]*"/\1'"$value"'"/' todos.json
+	sed -z -E -i 's/("id".*'"$ID"',[^}]*"updatedAt"\s*:\s*")[^"]*"/\1'"$now"'"/' todos.json
 }
 
 addTask(){	
@@ -182,6 +184,7 @@ main(){
         mark-done)
             [[ -z "$2" ]] && error_exit "ID missing."
             update_status "$2" "done"
+			;;
 		list)
 			listTasks "$@"
 			;;
@@ -192,17 +195,3 @@ main(){
 }
 
 main "$@"
-
-
-
-
-# [
-#   {
-#      "id" : 1,
-#      "description" : "djalsdfjas",
-#      "status" : "todo",
-#      "createdAt" : "12.12.12",
-#      "updatedAt" : "13.12.12"
-#   },
-#   ...
-# ]
