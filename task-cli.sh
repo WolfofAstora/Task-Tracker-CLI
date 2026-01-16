@@ -28,6 +28,7 @@ addToJSON(){
 	print
 	}' todos.json > "$tmp" && mv "$tmp" todos.json
 }
+
 updateJSON(){
 	local gatheredID=$(checkID "$@")
 	if [[ $gatheredID = "$2" && "$#" -eq 3 ]]; then
